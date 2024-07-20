@@ -1,0 +1,23 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@gala-chain/client": "^1.1.25",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.1",
+    "express": "^4.19.2",
+    "fabric-ca-client": "^2.2.20",
+    "fabric-network": "^2.2.20"
+  },
+  "devDependencies": {
+    "axios": "^1.7.2"
+  }
+}

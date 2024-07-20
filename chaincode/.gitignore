@@ -1,0 +1,12 @@
+node_modules
+package-lock.json
+.env
+.vscode
+.npmrc
+
+keys
+dist
+lib
+logs
+
+test-network

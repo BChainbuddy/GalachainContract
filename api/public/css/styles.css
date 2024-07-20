@@ -1,0 +1,180 @@
+:root {
+	--background-dark: #1f1f1f;
+	--background-light: #f0f0f0;
+	--text-dark: #ffffff;
+	--text-light: #000000;
+	--primary-dark: #363636;
+	--primary-light: #ffffff;
+	--secondary-dark: #191919;
+	--secondary-light: #cccccc;
+	--highlight-dark: #4f1b1a;
+	--highlight-light: #ffc1c1;
+	--border-dark: #8c8c8c;
+	--border-light: #b7b7b7;
+	--link-dark: #000000;
+	--link-light: #252525;
+}
+
+body {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	background: var(--background-dark);
+	color: var(--text-dark);
+	margin: 0;
+	transition: background 0.3s, color 0.3s;
+}
+
+header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20px;
+	background: var(--primary-dark);
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	transition: background 0.3s;
+}
+
+header h1 {
+	margin: 0;
+	font-size: 24px;
+}
+
+.toggle-mode {
+	background: var(--secondary-dark);
+	color: var(--text-dark);
+	border: none;
+	padding: 10px 20px;
+	cursor: pointer;
+	border-radius: 5px;
+	transition: background 0.3s, color 0.3s;
+}
+
+.container {
+	max-width: 1080px;
+	margin: auto;
+	padding: 20px;
+}
+
+#nonApiMessage {
+	background-color: var(--highlight-dark);
+	padding: 20px;
+	border-radius: 8px;
+	margin-bottom: 20px;
+	transition: background 0.3s;
+}
+
+#statusContainer {
+	display: flex;
+	justify-content: space-between;
+	padding: 20px;
+	border: 3px double var(--border-dark);
+	border-radius: 8px;
+	margin-bottom: 20px;
+	transition: border-color 0.3s;
+}
+
+#statusContainer p {
+	background: var(--primary-dark);
+	padding: 10px;
+	border-radius: 8px;
+	transition: background 0.3s;
+	border: 1px solid var(--border-dark);
+}
+
+h3 {
+	font-size: 20px;
+	margin-top: 40px;
+	border-bottom: 2px solid var(--text-dark);
+	padding-bottom: 10px;
+}
+
+ul.quicklinks,
+ul {
+	padding: 0;
+	list-style: none;
+}
+
+ul.quicklinks li {
+	display: inline-block;
+	margin-right: 10px;
+	background: var(--primary-light);
+	padding: 10px;
+	border-radius: 5px;
+	transition: background 0.3s;
+	border: 1px solid var(--border-dark);
+}
+
+ul.quicklinks li a {
+	text-decoration: none;
+	color: var(--link-dark);
+	transition: color 0.3s;
+}
+
+ul li {
+	margin-bottom: 20px;
+}
+
+ul li b {
+	font-size: 18px;
+}
+
+pre {
+	background-color: var(--primary-dark);
+	padding: 15px;
+	border-radius: 5px;
+	overflow-x: auto;
+	transition: background 0.3s;
+}
+
+button.copy {
+	background: var(--secondary-dark);
+	color: var(--text-dark);
+	border: none;
+	padding: 5px 10px;
+	cursor: pointer;
+	border-radius: 5px;
+	transition: background 0.3s, color 0.3s;
+}
+
+.light-mode {
+	--background-dark: var(--background-light);
+	--text-dark: var(--text-light);
+	--primary-dark: var(--primary-light);
+	--secondary-dark: var(--secondary-light);
+	--highlight-dark: var(--highlight-light);
+	--border-dark: var(--border-light);
+	--link-dark: var(--link-light);
+}
+
+.tabs {
+	overflow: hidden;
+	background: var(--primary-dark);
+	margin-bottom: 20px;
+	border-radius: 8px;
+}
+
+.tablink {
+	background: var(--primary-dark);
+	color: var(--text-dark);
+	float: left;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	padding: 14px 16px;
+	font-size: 17px;
+	transition: background 0.3s, color 0.3s;
+}
+
+.tablink:hover {
+	background: var(--secondary-dark);
+}
+
+.tablink.active {
+	background: var(--secondary-dark);
+}
+
+.tabcontent {
+	display: none;
+	padding: 20px;
+	border: 3px solid var(--border-dark);
+	border-radius: 8px;
+}

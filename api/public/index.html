@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Galachain API Dev Kit</title>
+		<link rel="stylesheet" href="css/styles.css" />
+	</head>
+	<body>
+		<header>
+			<h1>Galachain API Dev Kit</h1>
+			<button
+				class="toggle-mode"
+				onclick="document.body.classList.toggle('light-mode')"
+			>
+				Light/Dark Mode
+			</button>
+		</header>
+		<div class="container">
+			<!-- <div id="nonApiMessage">
+				<p>You have reached: <strong id="currentUrl"></strong></p>
+				<p>This is not an active API endpoint.</p>
+			</div> -->
+			<div id="statusContainer">
+				<p>
+					<strong>API:</strong>
+					<span id="apiStatus">Checking...</span>
+				</p>
+				<p>
+					<strong>GraphQL:</strong>
+					<span id="galachainApiStatus">Checking...</span>
+				</p>
+				<p>
+					<strong>Block Explorer:</strong>
+					<span id="galachainStatus">Checking...</span>
+				</p>
+			</div>
+			<h3>Quicklinks</h3>
+			<ul class="quicklinks">
+				<li>
+					<a href="#" id="blockExplorerLink" target="_blank">Block Explorer</a>
+				</li>
+				<li><a href="#" id="graphqlLink" target="_blank">GraphQL</a></li>
+			</ul>
+			<ul>
+				<li>
+					<b>GET /assets/getBalances</b> - Retrieve the token balances for a
+					user.<button class="copy" onclick="copyToClipboard('#preToken7')">
+						Copy
+					</button>
+					<pre
+						id="preToken7"
+					>curl -X GET "<span class="apiBaseUrl"></span>/assets/getBalances?userId=client|NewUser01" \<br>-H "Content-Type: application/json"</pre>
+				</li>
+			</ul>
+			<div class="tabs">
+				<button class="tablink" onclick="openTab(event, 'Public Key')">
+					Public Key
+				</button>
+				<button class="tablink" onclick="openTab(event, 'Token')">Token</button>
+				<button class="tablink" onclick="openTab(event, 'NFT')">NFT</button>
+			</div>
+			<div id="Public Key" class="tabcontent">
+				<h1>Public Key API Endpoints</h1>
+				<ul>
+					<li>
+						<b>POST /pk/user</b> - Register a new user with their public
+						key.<button class="copy" onclick="copyToClipboard('#preNFT2')">
+							Copy
+						</button>
+						<pre
+							id="preNFT2"
+						>curl -X POST <span class="apiBaseUrl"></span>/pk/user \<br>-H "Content-Type: application/json" \<br>-d '{"user": "client|NewUser01"}'</pre>
+					</li>
+				</ul>
+			</div>
+			<div id="NFT" class="tabcontent">
+				<h1>NFT API Endpoints</h1>
+				<ul>
+					<li>
+						<b>POST /assets/createTokenClass</b> - Create a new token
+						class.<button class="copy" onclick="copyToClipboard('#preNFT3')">
+							Copy
+						</button>
+						<pre
+							id="preNFT3"
+						>curl -X POST <span class="apiBaseUrl"></span>/assets/createTokenClass \<br>-H "Content-Type: application/json" \<br>-d '{<br>"network": "GC",<br> "tokenClass": {<br>"collection": "Membership",<br>"category": "Employer",<br>"type": "Standard",<br>"additionalKey": "Epic"<br>},<br>"isNonFungible": true,<br>"decimals": 0,<br>"name": "Standard Membership",<br>"symbol": "MBRE",<br>"description": "A detailed description of the token.",<br>"rarity": "Epic",<br>"image": "https://example.com/image.png",<br>"metadataAddress": "https://example.com/metadata.json",<br>"contractAddress": "none",<br>"maxSupply": "10000",<br>"maxCapacity": "10000",<br>"totalMintAllowance": "5000000",<br>"totalSupply": "0",<br>"totalBurned": "0"<br>}'</pre>
+					</li>
+					<li>
+						<b>POST /assets/grantAllowance</b> - Gives authority to mint token
+						instances.
+						<button class="copy" onclick="copyToClipboard('#preNFT4')">
+							Copy
+						</button>
+						<pre
+							id="preNFT4"
+						>curl -X POST <span class="apiBaseUrl"></span>/assets/grantAllowance \<br>-H "Content-Type: application/json" \<br>-d '{<br>"collection": "Membership",<br>"category": "Employer",<br>"type": "Standard",<br>"additionalKey": "Epic",<br>"allowanceType": 4,<br>"quantities": [{<br>"user": "client|NewUser01",<br>"quantity": "1"<br>}],<br>"uses": "5"<br>}'</pre>
+					</li>
+					<li>
+						<b>POST /assets/mintToken</b> - Mints token instances.
+						<button class="copy" onclick="copyToClipboard('#preNFT5')">
+							Copy
+						</button>
+						<pre
+							id="preNFT5"
+						>curl -X POST <span class="apiBaseUrl"></span>/assets/mintToken \<br>-H "Content-Type: application/json" \<br>-d '{<br>"tokenClassKey": {<br>"collection": "Membership",<br>"category": "Employer",<br>"type": "Standard",<br>"additionalKey": "Epic"<br>},<br>"owner": "client|NewUser01",<br>"quantity": "1",<br>"userPrivateKey": "private-key-here"<br>}'</pre>
+					</li>
+					<li>
+						<b>POST /assets/burnTokens</b> - Burns token instances.<button
+							class="copy"
+							onclick="copyToClipboard('#preNFT6')"
+						>
+							Copy
+						</button>
+						<pre
+							id="preNFT6"
+						>curl -X POST <span class="apiBaseUrl"></span>/assets/burnTokens \<br>-H "Content-Type: application/json" \<br>-d '{<br>"tokenInstances": [<br>{<br>"quantity": "1",<br>"tokenInstanceKey": {<br>"collection": "Membership",<br>"category": "Employer",<br>"type": "Standard",<br>"additionalKey": "Epic",<br>"instance": "1"<br>}<br>}<br>],<br>"owner": "client|NewUser01",<br>"userPrivateKey": "private-key"<br>}'</pre>
+					</li>
+					<li>
+						<b>GET /assets/getAllowances</b> - Retrieve the token allowances for
+						a user.<button class="copy" onclick="copyToClipboard('#preNFT8')">
+							Copy
+						</button>
+						<pre
+							id="preNFT8"
+						>curl -X GET "<span class="apiBaseUrl"></span>/assets/getAllowances?tokenInstanceKey=Membership$Employer$Standard$Epic$0&user=client|admin&grantedTo=client|NewUser01" \<br>-H "Content-Type: application/json"</pre>
+					</li>
+					<li>
+						<b>POST /assets/lockToken</b> - Lock a token instance.<button
+							class="copy"
+							onclick="copyToClipboard('#preNFT9')"
+						>
+							Copy
+						</button>
+						<pre
+							id="preNFT9"
+						>curl -X POST <span class="apiBaseUrl"></span>/assets/lockToken \<br>-H "Content-Type: application/json" \<br>-d '{<br>"owner": "client|NewUser01",<br>"lockAuthority": "client|NewUser01",<br>"tokenInstance": {<br>"collection": "Membership",<br>"category": "Employer",<br>"type": "Standard",<br>"additionalKey": "Epic",<br>"instance": "1"<br>},<br>"quantity": "1",<br>"useAllowances": ["5"],<br>"userPrivateKey": "private-key"<br>}'</pre>
+					</li>
+					<li>
+						<b>POST /assets/unlockToken</b> - Unlock a token instance.<button
+							class="copy"
+							onclick="copyToClipboard('#preNFT10')"
+						>
+							Copy
+						</button>
+						<pre
+							id="preNFT10"
+						>curl -X POST <span class="apiBaseUrl"></span>/assets/unlockToken \<br>-H "Content-Type: application/json" \<br>-d '{<br>"owner": "client|NewUser01",<br>"tokenInstance": {<br>"collection": "Membership",<br>"category": "Employer",<br>"type": "Standard",<br>"additionalKey": "Epic",<br>"instance": "1"<br>},<br>"quantity": "1",<br>"lockedHoldName": "hold-name",<br>"userPrivateKey": "private-key"<br>}'</pre>
+					</li>
+				</ul>
+			</div>
+			<div id="Token" class="tabcontent">
+				<h1>Token API Endpoints</h1>
+				<ul>
+					<li>
+						<b>POST /assets/createTokenClass</b> - Create a new token
+						class.<button class="copy" onclick="copyToClipboard('#preToken3')">
+							Copy
+						</button>
+						<pre
+							id="preToken3"
+						>curl -X POST <span class="apiBaseUrl"></span>/assets/createTokenClass \<br>-H "Content-Type: application/json" \<br>-d '{<br>"network": "GC",<br> "tokenClass": {<br>"collection": "Currency",<br>"category": "Standard",<br>"type": "None",<br>"additionalKey": "None"<br>},<br>"isNonFungible": false,<br>"decimals": 18,<br>"name": "Standard Currency",<br>"symbol": "CURR",<br>"description": "A detailed description of the token.",<br>"rarity": "None",<br>"image": "https://example.com/image.png",<br>"metadataAddress": "https://example.com/metadata.json",<br>"contractAddress": "none",<br>"maxSupply": "1000000",<br>"maxCapacity": "1000000",<br>"totalMintAllowance": "5000000",<br>"totalSupply": "0",<br>"totalBurned": "0"<br>}'</pre>
+					</li>
+					<li>
+						<b>POST /assets/grantAllowance</b> - Gives authority to mint token
+						instances.
+						<button class="copy" onclick="copyToClipboard('#preToken4')">
+							Copy
+						</button>
+						<pre
+							id="preToken4"
+						>curl -X POST <span class="apiBaseUrl"></span>/assets/grantAllowance \<br>-H "Content-Type: application/json" \<br>-d '{<br>"collection": "Currency",<br>"category": "Standard",<br>"type": "None",<br>"additionalKey": "None",<br>"allowanceType": 4,<br>"quantities": [{<br>"user": "client|NewUser01",<br>"quantity": "1000"<br>}],<br>"uses": "5"<br>}'</pre>
+					</li>
+					<li>
+						<b>POST /assets/mintToken</b> - Mints token instances.
+						<button class="copy" onclick="copyToClipboard('#preToken5')">
+							Copy
+						</button>
+						<pre
+							id="preToken5"
+						>curl -X POST <span class="apiBaseUrl"></span>/assets/mintToken \<br>-H "Content-Type: application/json" \<br>-d '{<br>"tokenClassKey": {<br>"collection": "Currency",<br>"category": "Standard",<br>"type": "None",<br>"additionalKey": "None"<br>},<br>"owner": "client|NewUser01",<br>"quantity": "1000",<br>"userPrivateKey": "private-key-here"<br>}'</pre>
+					</li>
+					<li>
+						<b>POST /assets/burnTokens</b> - Burns token instances.<button
+							class="copy"
+							onclick="copyToClipboard('#preToken6')"
+						>
+							Copy
+						</button>
+						<pre
+							id="preToken6"
+						>curl -X POST <span class="apiBaseUrl"></span>/assets/burnTokens \<br>-H "Content-Type: application/json" \<br>-d '{<br>"tokenInstances": [<br>{<br>"quantity": "100",<br>"tokenInstanceKey": {<br>"collection": "Currency",<br>"category": "Standard",<br>"type": "None",<br>"additionalKey": "None",<br>"instance": "0"<br>}<br>}<br>],<br>"owner": "client|NewUser01",<br>"userPrivateKey": "private-key"<br>}'</pre>
+					</li>
+					<li>
+						<b>GET /assets/getAllowances</b> - Retrieve the token allowances for
+						a user.<button class="copy" onclick="copyToClipboard('#preToken8')">
+							Copy
+						</button>
+						<pre
+							id="preToken8"
+						>curl -X GET "<span class="apiBaseUrl"></span>/assets/getAllowances?tokenInstanceKey=Currency$Standard$None$None$0&user=client|admin&grantedTo=client|NewUser01" \<br>-H "Content-Type: application/json"</pre>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<script src="js/index.js"></script>
+	</body>
+</html>
