@@ -1,7 +1,7 @@
 import { BigNumberProperty, ChainKey, ChainObject, DefaultError, StringEnumProperty } from "@gala-chain/api";
 import BigNumber from "bignumber.js";
 import { Exclude } from "class-transformer";
-import { IsString, IsInt, IsDate } from "class-validator";
+import { IsString, IsInt, IsDate, IsArray } from "class-validator";
 
 export enum Course {
   MATH = "MATH",
@@ -27,20 +27,19 @@ export class Student extends ChainObject {
   @StringEnumProperty(Course)
   public readonly course: Course;
 
-  @ChainKey({ position: 3 })
-  @IsDate()
-  public readonly enrolmentDate: Date;
-
-  @ChainKey({ position: 4 })
-  @IsInt()
+  @IsArray()
+  @IsInt({ each: true })
   public readonly grades: number[];
+
+  public readonly enrolmentDate: Date;
 
   constructor(studentId: number, name: string, course: Course) {
     super();
     this.studentId = studentId;
     this.name = name;
-    this.course = course
+    this.course = course;
     this.enrolmentDate = new Date();
+    this.grades = [];
   }
 
   public getAverageGrade(): number {
@@ -58,5 +57,18 @@ export class Student extends ChainObject {
 
   public isEnroled(): boolean {
     return new Date() > this.enrolmentDate;
+  }
+}
+
+export class StudentCounter extends ChainObject {
+  @ChainKey({ position: 0 })
+  public static readonly INDEX_KEY = "studentCounter";
+
+  @IsInt()
+  public count: number;
+
+  constructor(count: number) {
+    super();
+    this.count = count;
   }
 }

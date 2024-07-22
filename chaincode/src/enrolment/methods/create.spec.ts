@@ -2,37 +2,49 @@ import { GalaContract } from "@gala-chain/chaincode";
 import { ChainUser } from "@gala-chain/client";
 import { fixture, writesMap } from "@gala-chain/test";
 
-import { AppleTree, Variety } from "../object";
-import { AppleTreeDto, AppleTreesDto, plantTree, plantTrees } from "./create";
+import { Student, Course } from "../object";
+import { EnrollStudentDto, enrollStudent } from "./create";
 
 class TestContract extends GalaContract {
   constructor() {
     super("TestContract", "0.0.1");
   }
 }
-describe("CREATE FUNCTIONS", () => {
-  it("should allow users to plant fruit trees", async () => {
+
+describe("ENROLL FUNCTIONS", () => {
+  it("should allow users to enroll students", async () => {
     const user = ChainUser.withRandomKeys();
 
     const { ctx, writes } = fixture(TestContract).callingUser(user);
 
-    const honey = new AppleTreeDto(Variety.HONEYCRISP, 1);
-    const mac = new AppleTreeDto(Variety.MCINTOSH, 2);
-    const dto = new AppleTreesDto([honey, mac]);
+    const student1Dto = new EnrollStudentDto("John Doe", Course.MATH);
+    const student2Dto = new EnrollStudentDto("Jane Smith", Course.ENGLISH);
 
-    let expectedTrees: AppleTree[] = dto.trees.map(
-      (tree) => new AppleTree(user.identityKey, tree.variety, tree.index, ctx.txUnixTime)
-    );
+    await enrollStudent(ctx, student1Dto);
+    await enrollStudent(ctx, student2Dto);
 
-    const res1 = await plantTrees(ctx, dto);
-    expect(res1).toEqual(expectedTrees);
-
-    const gold = new AppleTreeDto(Variety.GOLDEN_DELICIOUS, 3);
-    const res2 = await plantTree(ctx, gold);
-    expectedTrees.push(new AppleTree(user.identityKey, gold.variety, gold.index, ctx.txUnixTime));
-    expect(res2).toEqual(expectedTrees[2]);
+    const expectedStudent1 = new Student(1, "John Doe", Course.MATH);
+    const expectedStudent2 = new Student(2, "Jane Smith", Course.ENGLISH);
 
     await ctx.stub.flushWrites();
-    expect(writes).toEqual(writesMap(...expectedTrees));
+
+    const expectedWrites = writesMap(expectedStudent1, expectedStudent2);
+
+    // Remove enrolmentDate from comparison
+    function removeEnrolmentDate(obj: any) {
+      const parsedObj = JSON.parse(obj);
+      delete parsedObj.enrolmentDate;
+      return JSON.stringify(parsedObj);
+    }
+
+    const processedWrites = Object.fromEntries(
+      Object.entries(writes).map(([key, value]) => [key, removeEnrolmentDate(value)])
+    );
+
+    const processedExpectedWrites = Object.fromEntries(
+      Object.entries(expectedWrites).map(([key, value]) => [key, removeEnrolmentDate(value)])
+    );
+
+    expect(processedWrites).toEqual(processedExpectedWrites);
   });
 });
