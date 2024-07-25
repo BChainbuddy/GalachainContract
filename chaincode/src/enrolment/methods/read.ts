@@ -9,8 +9,7 @@ import { Type } from "class-transformer";
 import { IsArray, IsOptional, IsString, ValidateNested, IsInt } from "class-validator";
 import { QueryResponseMetadata } from "fabric-shim";
 
-import { Student } from "../object";
-import { StudentCounter } from "./create";
+import { Student, StudentCounter } from "../object";
 
 export class FetchStudentDataDto extends ChainCallDTO {
 

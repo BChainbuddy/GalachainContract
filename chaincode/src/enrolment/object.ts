@@ -56,7 +56,7 @@ export class Student extends ChainObject {
   }
 
   public isEnroled(): boolean {
-    return new Date() > this.enrolmentDate;
+    return new Date() >= this.enrolmentDate;
   }
 }
 

@@ -3,7 +3,8 @@ import { ChainUser } from "@gala-chain/client";
 import { fixture, writesMap } from "@gala-chain/test";
 
 import { Student, Course } from "../object";
-import { enrollStudent, EnrollStudentDto } from "./create"
+import { FetchStudentDataDto, fetchStudent, StudentDataDto } from "./read";
+import { enrollStudent, EnrollStudentDto } from "./create";
 
 class TestContract extends GalaContract {
   constructor() {
@@ -11,24 +12,33 @@ class TestContract extends GalaContract {
   }
 }
 
-
 describe("READ STUDENT FUNCTION", () => {
-  it("should allow users to enroll students", async () => {
+  it("should read the students", async () => {
     const user = ChainUser.withRandomKeys();
 
     const { ctx, writes } = fixture(TestContract).callingUser(user);
 
+    // Enrolling the student
     const student1Dto = new EnrollStudentDto("John Doe", Course.MATH);
-    const student2Dto = new EnrollStudentDto("Jane Smith", Course.ENGLISH);
-
-    const expectedStudent1 = new Student(1, "John Doe", Course.MATH, new Date());
-    const expectedStudent2 = new Student(2, "Jane Smith", Course.ENGLISH, new Date());
 
     await enrollStudent(ctx, student1Dto);
-    await enrollStudent(ctx, student2Dto);
 
     await ctx.stub.flushWrites();
+  
+    // Fetching the student
+    const studentData = new FetchStudentDataDto(1, "John Doe")
 
-    expect(writes).toEqual(writesMap(expectedStudent1, expectedStudent2));
+    const response = await fetchStudent(ctx, studentData)
+
+    const newStudent = new Student(1, "John Doe", Course.MATH)
+
+    const expectedStudent = new StudentDataDto([newStudent], { bookmark: '', fetchedRecordsCount: 1 })
+
+    // Check
+    expect(response["results"][0]["course"]).toEqual(expectedStudent["results"][0]["course"])
+    expect(response["results"][0]["grades"]).toEqual(expectedStudent["results"][0]["grades"])
+    expect(response["results"][0]["studentId"]).toEqual(expectedStudent["results"][0]["studentId"])
+    expect(response["results"][0]["name"]).toEqual(expectedStudent["results"][0]["name"])
+    expect(response["results"][0]["enrolmentDate"]).not.toEqual(expectedStudent["results"][0]["enrolmentDate"])
   });
 });

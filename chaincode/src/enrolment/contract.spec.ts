@@ -3,60 +3,62 @@ import { fixture, transactionErrorMessageContains, transactionSuccess, writesMap
 //
 import { plainToInstance } from "class-transformer";
 
-import { AppleContract } from "./contract";
-import { AppleTreeDto } from "./methods/create";
-import { HarvestAppleDto } from "./methods/update";
-import { AppleTree, Variety } from "./object";
+import { StudentEnrolment } from "./contract";
+import { EnrollStudentDto } from "./methods/create";
 
-it("should allow to plant a tree", async () => {
+import { Course, Student } from "./object";
+
+it("should allow enrolment of student", async () => {
   // Given
-  const { contract, ctx, writes } = fixture(AppleContract);
-  const dto = new AppleTreeDto(Variety.HONEYCRISP, 1);
-  const expectedTree = new AppleTree(ctx.callingUser, dto.variety, dto.index, ctx.txUnixTime);
+  const { contract, ctx, writes } = fixture(StudentEnrolment); 
+  const dto = new EnrollStudentDto("John Doe", Course.MATH);
+  const expectedStudent = new Student(1, dto.name, dto.course);
 
   // When
-  const response = await contract.PlantTree(ctx, dto);
+  const response = await contract.EnrollStudent(ctx, dto);
 
   // Then
+  console.log(writes)
+  console.log(writesMap(expectedStudent))
   expect(response).toEqual(transactionSuccess());
-  expect(writes).toEqual(writesMap(expectedTree));
+  expect(writes).toEqual(writesMap(expectedStudent));
 });
 
-it("should fail to plant a tree if tree already exists", async () => {
-  // Given
-  const user = ChainUser.withRandomKeys();
+// it("should fail to plant a tree if tree already exists", async () => {
+//   // Given
+//   const user = ChainUser.withRandomKeys();
 
-  const { contract, ctx, writes } = fixture(AppleContract)
-    .callingUser(user)
-    .savedState(new AppleTree(user.identityKey, Variety.MCINTOSH, 1, 0));
+//   const { contract, ctx, writes } = fixture(AppleContract)
+//     .callingUser(user)
+//     .savedState(new AppleTree(user.identityKey, Variety.MCINTOSH, 1, 0));
 
-  // When
-  const response = await contract.PlantTree(ctx, new AppleTreeDto(Variety.MCINTOSH, 1));
+//   // When
+//   const response = await contract.PlantTree(ctx, new AppleTreeDto(Variety.MCINTOSH, 1));
 
-  // Then
-  expect(response).toEqual(transactionErrorMessageContains("already exists"));
-  expect(writes).toEqual({});
-});
+//   // Then
+//   expect(response).toEqual(transactionErrorMessageContains("already exists"));
+//   expect(writes).toEqual({});
+// });
 
-it("should allow apple harvests", async () => {
-  // Given
-  const twoYearsAgo = new Date(new Date().getTime() - 1000 * 60 * 60 * 24 * 365 * 2).getTime();
-  const existingTree = new AppleTree("client|some-user", Variety.HONEYCRISP, 1, twoYearsAgo);
-  const { contract, ctx, writes } = fixture(AppleContract).savedState(existingTree);
+// it("should allow apple harvests", async () => {
+//   // Given
+//   const twoYearsAgo = new Date(new Date().getTime() - 1000 * 60 * 60 * 24 * 365 * 2).getTime();
+//   const existingTree = new AppleTree("client|some-user", Variety.HONEYCRISP, 1, twoYearsAgo);
+//   const { contract, ctx, writes } = fixture(AppleContract).savedState(existingTree);
 
-  const dto = new HarvestAppleDto(existingTree.creator, existingTree.variety, existingTree.index);
+//   const dto = new HarvestAppleDto(existingTree.creator, existingTree.variety, existingTree.index);
 
-  // When
-  const response = await contract.HarvestApple(ctx, dto);
+//   // When
+//   const response = await contract.HarvestApple(ctx, dto);
 
-  // Then
-  expect(response).toEqual(transactionSuccess());
-  expect(writes).toEqual(
-    writesMap(
-      plainToInstance(AppleTree, {
-        ...existingTree,
-        timesHarvested: existingTree.timesHarvested.plus(1)
-      })
-    )
-  );
-});
+//   // Then
+//   expect(response).toEqual(transactionSuccess());
+//   expect(writes).toEqual(
+//     writesMap(
+//       plainToInstance(AppleTree, {
+//         ...existingTree,
+//         timesHarvested: existingTree.timesHarvested.plus(1)
+//       })
+//     )
+//   );
+// });
