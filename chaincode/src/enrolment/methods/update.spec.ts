@@ -20,7 +20,7 @@ describe("UPDATES THE STUDENT", () => {
 
         const { ctx, writes } = fixture(TestContract).callingUser(user)
 
-            /// Enrolling the student
+        // Enrolling the student
         const student1Dto = new EnrollStudentDto("John Doe", Course.MATH);
         await enrollStudent(ctx, student1Dto);
 

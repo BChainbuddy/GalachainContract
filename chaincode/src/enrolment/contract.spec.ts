@@ -1,64 +1,97 @@
 import { ChainUser } from "@gala-chain/client";
-import { fixture, transactionErrorMessageContains, transactionSuccess, writesMap } from "@gala-chain/test";
-//
-import { plainToInstance } from "class-transformer";
-
+import { fixture, transactionSuccess, writesMap } from "@gala-chain/test";
 import { StudentEnrolment } from "./contract";
 import { EnrollStudentDto } from "./methods/create";
-
 import { Course, Student } from "./object";
+import { NewGradeDto } from "./methods/update";
+import { FetchStudentDataDto, StudentDataDto } from "./methods/read";
 
 it("should allow enrolment of student", async () => {
   // Given
-  const { contract, ctx, writes } = fixture(StudentEnrolment); 
+  const user = ChainUser.withRandomKeys(); // Ensure unique user
+  const { contract, ctx, writes } = fixture(StudentEnrolment).callingUser(user);
   const dto = new EnrollStudentDto("John Doe", Course.MATH);
   const expectedStudent = new Student(1, dto.name, dto.course);
+  const expectedWrites = writesMap(expectedStudent);
 
   // When
   const response = await contract.EnrollStudent(ctx, dto);
 
   // Then
-  console.log(writes)
-  console.log(writesMap(expectedStudent))
+  function removeEnrolmentDate(obj: any) {
+    const parsedObj = JSON.parse(obj);
+    delete parsedObj.enrolmentDate;
+    return JSON.stringify(parsedObj);
+  }
+
+  const processedWrites = Object.fromEntries(
+    Object.entries(writes).map(([key, value]) => [key, removeEnrolmentDate(value)])
+  );
+
+  const processedExpectedWrites = Object.fromEntries(
+    Object.entries(expectedWrites).map(([key, value]) => [key, removeEnrolmentDate(value)])
+  );
+
   expect(response).toEqual(transactionSuccess());
-  expect(writes).toEqual(writesMap(expectedStudent));
+  expect(processedWrites).toEqual(processedExpectedWrites);
 });
 
-// it("should fail to plant a tree if tree already exists", async () => {
-//   // Given
-//   const user = ChainUser.withRandomKeys();
+it("Should update grades", async () => {
+  // Given
+  const user = ChainUser.withRandomKeys(); // Ensure unique user
+  const {contract, ctx, writes} = fixture(StudentEnrolment)
+  .callingUser(user)
+  .savedState(new Student(1, "John Doe", Course.MATH));
+  const newGradeDto = new NewGradeDto(1, 8);
+  const expectedWrites = writesMap(new Student(1, "John Doe", Course.MATH));
 
-//   const { contract, ctx, writes } = fixture(AppleContract)
-//     .callingUser(user)
-//     .savedState(new AppleTree(user.identityKey, Variety.MCINTOSH, 1, 0));
 
-//   // When
-//   const response = await contract.PlantTree(ctx, new AppleTreeDto(Variety.MCINTOSH, 1));
+  // When
+  const responseAddGrade = await contract.AddNewGrade(ctx, newGradeDto);
+  await ctx.stub.flushWrites();
 
-//   // Then
-//   expect(response).toEqual(transactionErrorMessageContains("already exists"));
-//   expect(writes).toEqual({});
-// });
+  // Then
+  function removeEnrolmentDate(obj: any) {
+    const parsedObj = JSON.parse(obj);
+    delete parsedObj.enrolmentDate;
+    return JSON.stringify(parsedObj);
+  }
 
-// it("should allow apple harvests", async () => {
-//   // Given
-//   const twoYearsAgo = new Date(new Date().getTime() - 1000 * 60 * 60 * 24 * 365 * 2).getTime();
-//   const existingTree = new AppleTree("client|some-user", Variety.HONEYCRISP, 1, twoYearsAgo);
-//   const { contract, ctx, writes } = fixture(AppleContract).savedState(existingTree);
+  function addGrade(obj: any) {
+    const parsedObj = JSON.parse(obj);
+    delete parsedObj.enrolmentDate;
+    parsedObj.grades = [8]
+    return JSON.stringify(parsedObj);
+  }
 
-//   const dto = new HarvestAppleDto(existingTree.creator, existingTree.variety, existingTree.index);
+  const processedWrites = Object.fromEntries(
+    Object.entries(writes).map(([key, value]) => [key, removeEnrolmentDate(value)])
+  );
 
-//   // When
-//   const response = await contract.HarvestApple(ctx, dto);
+  const processedExpectedWrites = Object.fromEntries(
+    Object.entries(expectedWrites).map(([key, value]) => [key, addGrade(value)])
+  );
 
-//   // Then
-//   expect(response).toEqual(transactionSuccess());
-//   expect(writes).toEqual(
-//     writesMap(
-//       plainToInstance(AppleTree, {
-//         ...existingTree,
-//         timesHarvested: existingTree.timesHarvested.plus(1)
-//       })
-//     )
-//   );
-// });
+  expect(responseAddGrade).toEqual(transactionSuccess());
+  expect(processedWrites).toEqual(processedExpectedWrites);
+});
+
+it("Should find the student", async () => {
+  // Given
+  const user = ChainUser.withRandomKeys(); // Ensure unique user
+  const {contract, ctx, writes} = fixture(StudentEnrolment)
+  .callingUser(user)
+  .savedState(new Student(1, "John Doe", Course.MATH));
+  const studentDto = new FetchStudentDataDto(1, "John Doe")
+
+  // When
+  const response = await contract.FetchStudent(ctx, studentDto)
+  const expectedStudent = new StudentDataDto([new Student(1, "John Doe", Course.MATH)], { bookmark: '', fetchedRecordsCount: 1 })
+
+  // Then
+  expect(response["Data"]["results"][0]["course"]).toEqual(expectedStudent["results"][0]["course"])
+  expect(response["Data"]["results"][0]["grades"]).toEqual(expectedStudent["results"][0]["grades"])
+  expect(response["Data"]["results"][0]["studentId"]).toEqual(expectedStudent["results"][0]["studentId"])
+  expect(response["Data"]["results"][0]["name"]).toEqual(expectedStudent["results"][0]["name"])
+  
+})

@@ -19,7 +19,9 @@ export class NewGradeDto extends ChainCallDTO {
 }
 
 export async function addNewGrade(ctx: GalaChainContext, dto: NewGradeDto): Promise<void> {
-  const partialCompositeKey = `${Student.INDEX_KEY}:${dto.studentId}`;
+  const studentKey = `${Student.INDEX_KEY}:${dto.studentId}`;
+  console.log(`Fetching student with key: ${studentKey}`);
+  console.log(`New grade to add: ${dto.grade}`);
 
   let students: Student[];
   try {
@@ -28,13 +30,17 @@ export async function addNewGrade(ctx: GalaChainContext, dto: NewGradeDto): Prom
       throw new NotFoundError(`Student with ID ${dto.studentId} not found.`);
     }
   } catch (e) {
+    console.error(`Error fetching student with ID ${dto.studentId}: ${e.message}`);
     throw new NotFoundError(`Student with ID ${dto.studentId} not found.`);
   }
 
-  let student = students[0];
+  const student = students[0];
+  console.log(`Student found: ${JSON.stringify(student)}`);
+
   student.grades.push(dto.grade);
+  console.log(`Updated student grades: ${student.grades}`);
 
   await putChainObject(ctx, student);
+  console.log(`Student grades updated and stored.`);
 }
-
 

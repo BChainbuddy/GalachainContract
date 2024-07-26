@@ -17,7 +17,7 @@ export class StudentEnrolment extends GalaContract {
     in: EnrollStudentDto
   }) 
   public async EnrollStudent(ctx: GalaChainContext, dto: EnrollStudentDto): Promise<void> {
-  return await enrollStudent(ctx, dto)
+    return await enrollStudent(ctx, dto)
   }
 
   @Submit({
@@ -25,7 +25,7 @@ export class StudentEnrolment extends GalaContract {
     in: NewGradeDto
   })
   public async AddNewGrade(ctx: GalaChainContext, dto: NewGradeDto): Promise<void> {
-    return await  addNewGrade(ctx, dto)
+    return await addNewGrade(ctx, dto)
   }
 
   @Evaluate({
